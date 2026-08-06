@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Haystack Documentation
+    url: https://docs.haystack.deepset.ai/
+    about: Official Haystack documentation for building LLM applications.
+  - name: 🔎 Azure Cosmos DB for NoSQL Vector Search
+    url: https://learn.microsoft.com/azure/cosmos-db/nosql/vector-search
+    about: Microsoft documentation for vector search in Azure Cosmos DB for NoSQL.
+  - name: 💬 Haystack Community
+    url: https://haystack.deepset.ai/community
+    about: For usage questions and general discussions, please join the Haystack community.

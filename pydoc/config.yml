@@ -1,0 +1,33 @@
+loaders:
+  - type: haystack_pydoc_tools.loaders.CustomPythonLoader
+    search_path: [../src]
+    modules: [
+      "haystack_azure_cosmosdb.document_store",
+      "haystack_azure_cosmosdb.filters",
+      "haystack_azure_cosmosdb.embedding_retriever",
+      "haystack_azure_cosmosdb.full_text_retriever",
+      "haystack_azure_cosmosdb.hybrid_retriever",
+    ]
+    ignore_when_discovered: ["__init__"]
+processors:
+  - type: filter
+    expression:
+    documented_only: true
+    do_not_filter_modules: false
+    skip_empty_modules: true
+  - type: smart
+  - type: crossref
+renderer:
+  type: haystack_pydoc_tools.renderers.ReadmeIntegrationRenderer
+  excerpt: Azure Cosmos DB for NoSQL integration for Haystack.
+  category_slug: integrations-api
+  title: Azure Cosmos DB for NoSQL
+  slug: integrations-azure-cosmos-db-nosql
+  order: 15
+  markdown:
+    descriptive_class_title: false
+    classdef_code_block: false
+    descriptive_module_title: true
+    add_method_class_prefix: true
+    add_member_class_prefix: false
+    filename: _readme_azure_cosmos_db_nosql.md
