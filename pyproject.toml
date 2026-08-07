@@ -47,11 +47,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/aayush3011/haystack-azure-cosmosdb"
-Documentation = "https://github.com/aayush3011/haystack-azure-cosmosdb/blob/main/README.md"
-Repository = "https://github.com/aayush3011/haystack-azure-cosmosdb"
-Issues = "https://github.com/aayush3011/haystack-azure-cosmosdb/issues"
-Changelog = "https://github.com/aayush3011/haystack-azure-cosmosdb/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/AzureCosmosDB/haystack-azure-cosmosdb"
+Documentation = "https://github.com/AzureCosmosDB/haystack-azure-cosmosdb/blob/main/README.md"
+Repository = "https://github.com/AzureCosmosDB/haystack-azure-cosmosdb"
+Issues = "https://github.com/AzureCosmosDB/haystack-azure-cosmosdb/issues"
+Changelog = "https://github.com/AzureCosmosDB/haystack-azure-cosmosdb/blob/main/CHANGELOG.md"
 
 [tool.hatch.version]
 path = "src/haystack_azure_cosmosdb/__about__.py"

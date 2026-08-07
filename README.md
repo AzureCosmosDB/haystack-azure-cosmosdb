@@ -1,9 +1,11 @@
-# haystack-azure-cosmosdb
+# Azure Cosmos DB for NoSQL integration
 
 [![PyPI - Version](https://img.shields.io/pypi/v/haystack-azure-cosmosdb.svg)](https://pypi.org/project/haystack-azure-cosmosdb)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/haystack-azure-cosmosdb.svg)](https://pypi.org/project/haystack-azure-cosmosdb)
-[![CI](https://github.com/aayush3011/haystack-azure-cosmosdb/actions/workflows/ci.yml/badge.svg)](https://github.com/aayush3011/haystack-azure-cosmosdb/actions/workflows/ci.yml)
+[![CI](https://github.com/AzureCosmosDB/haystack-azure-cosmosdb/actions/workflows/ci.yml/badge.svg)](https://github.com/AzureCosmosDB/haystack-azure-cosmosdb/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/company/azure-cosmos-db/)
+[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=flat&logo=youtube&logoColor=white)](https://www.youtube.com/azurecosmosdb)
 
 [Azure Cosmos DB for NoSQL](https://learn.microsoft.com/azure/cosmos-db/nosql/) integration for
 [Haystack](https://haystack.deepset.ai/). It provides a document store and a vector-search retriever
