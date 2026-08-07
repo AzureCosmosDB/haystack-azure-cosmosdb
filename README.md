@@ -2,7 +2,7 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/haystack-azure-cosmosdb.svg)](https://pypi.org/project/haystack-azure-cosmosdb)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/haystack-azure-cosmosdb.svg)](https://pypi.org/project/haystack-azure-cosmosdb)
-[![Test](https://github.com/aayush3011/haystack-azure-cosmosdb/actions/workflows/test.yml/badge.svg)](https://github.com/aayush3011/haystack-azure-cosmosdb/actions/workflows/test.yml)
+[![CI](https://github.com/aayush3011/haystack-azure-cosmosdb/actions/workflows/ci.yml/badge.svg)](https://github.com/aayush3011/haystack-azure-cosmosdb/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 [Azure Cosmos DB for NoSQL](https://learn.microsoft.com/azure/cosmos-db/nosql/) integration for
@@ -216,17 +216,6 @@ make integration-test
 ```
 
 If the connection string is not set, all integration tests are skipped.
-
-### Continuous Integration
-
-Every pull request runs the following GitHub Actions workflows:
-
-| Workflow | File | What it checks |
-|---|---|---|
-| **Test** | `test.yml` | Ruff lint, Black format, mypy type-check, and unit tests across Python 3.9–3.13 on Linux/Windows/macOS. Nightly runs also test against Haystack's `main` branch. |
-| **License Compliance** | `license_compliance.yml` | Fails if a direct dependency introduces a Copyleft/unknown license. |
-| **Workflows Linting** | `workflows_linting.yml` | Runs `actionlint` on the workflow files themselves. |
-| **Release** | `release.yml` | Builds and publishes the package to PyPI on a GitHub release. |
 
 ## License
 
