@@ -1,0 +1,47 @@
+name: test
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    name: "pytest ${{ matrix.python-version }} / ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install package with test extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[test]"
+
+      - name: Run unit tests
+        run: pytest tests/unit -v
+
+      - name: Ensure tests did not modify the working tree
+        # Catches tests that accidentally leave files behind (e.g. cache
+        # directories or downloaded fixtures).
+        shell: bash
+        run: |
+          set -eu
+          STATUS="$(git status --porcelain)"
+          if [ -n "$STATUS" ]; then
+            echo "::error::Tests modified the working tree:"
+            echo "$STATUS"
+            exit 1
+          fi
+          echo "Working tree clean"

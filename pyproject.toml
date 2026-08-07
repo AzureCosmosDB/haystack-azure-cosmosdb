@@ -1,0 +1,176 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "haystack-azure-cosmosdb"
+dynamic = ["version"]
+description = "Azure Cosmos DB for NoSQL integration for Haystack, including a document store and vector-search retriever."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = [
+  "haystack",
+  "azure",
+  "cosmosdb",
+  "vector-search",
+  "document-store",
+  "llm",
+  "ai",
+  "rag",
+]
+authors = [{ name = "Aayush Kataria", email = "akataria@microsoft.com" }]
+maintainers = [
+  { name = "Aayush Kataria", email = "akataria@microsoft.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Database",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+  "haystack-ai",
+  "azure-cosmos>=4.9.0",
+  "azure-identity>=1.12.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/aayush3011/haystack-azure-cosmosdb"
+Documentation = "https://github.com/aayush3011/haystack-azure-cosmosdb/blob/main/README.md"
+Repository = "https://github.com/aayush3011/haystack-azure-cosmosdb"
+Issues = "https://github.com/aayush3011/haystack-azure-cosmosdb/issues"
+Changelog = "https://github.com/aayush3011/haystack-azure-cosmosdb/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "src/haystack_azure_cosmosdb/__about__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/haystack_azure_cosmosdb"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/CHANGELOG.md"]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-rerunfailures",
+  "coverage[toml]>=6.5",
+]
+lint = [
+  "black>=23.1.0",
+  "mypy>=1.0.0",
+  "ruff>=0.1.0",
+]
+docs = ["haystack-pydoc-tools"]
+
+[tool.black]
+target-version = ["py39"]
+line-length = 120
+skip-string-normalization = true
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+
+[tool.ruff.lint]
+select = [
+  "A",
+  "ARG",
+  "B",
+  "C",
+  "DTZ",
+  "E",
+  "EM",
+  "F",
+  "FBT",
+  "I",
+  "ICN",
+  "ISC",
+  "N",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",
+  "RUF",
+  "S",
+  "T",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
+]
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105",
+  "S106",
+  "S107",
+  # Ignore complexity
+  "C901",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["haystack_azure_cosmosdb"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+[tool.ruff.lint.per-file-ignores]
+# Tests can use magic values, assertions, relative imports, and non-crypto randomness
+"tests/**/*" = ["PLR2004", "S101", "TID252", "S311"]
+# Examples can contain "print" commands and access private members
+"examples/**/*" = ["T201"]
+# Accessing the private `_*_retrieval` helpers from the retrievers is intentional
+"src/haystack_azure_cosmosdb/embedding_retriever.py" = ["SLF001"]
+"src/haystack_azure_cosmosdb/full_text_retriever.py" = ["SLF001"]
+"src/haystack_azure_cosmosdb/hybrid_retriever.py" = ["SLF001"]
+
+[tool.coverage.run]
+source = ["haystack_azure_cosmosdb"]
+branch = true
+parallel = false
+
+[tool.coverage.report]
+omit = ["*/tests/*", "*/__init__.py"]
+show_missing = true
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--strict-markers"
+markers = [
+  "integration: marks tests that require a live Azure Cosmos DB for NoSQL account",
+]
+
+[tool.mypy]
+mypy_path = "src"
+ignore_missing_imports = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["haystack.*", "haystack_azure_cosmosdb.*", "azure.*", "pandas.*", "pytest.*"]
+ignore_missing_imports = true

@@ -1,0 +1,44 @@
+name: lint
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  # Inline annotations on PR diffs when ruff complains.
+  RUFF_OUTPUT_FORMAT: github
+
+jobs:
+  lint:
+    name: "lint & type-check #${{ matrix.python-version }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Min + max supported Pythons only; intermediates almost never surface
+        # a lint/type issue that doesn't show up on the boundaries.
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install package with lint extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[lint]"
+
+      - name: ruff check
+        run: ruff check src tests
+
+      - name: black --check
+        run: black --check src tests
+
+      - name: mypy
+        run: mypy src/haystack_azure_cosmosdb
