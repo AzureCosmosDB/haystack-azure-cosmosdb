@@ -77,3 +77,19 @@ class TestRetriever:
         retriever = AzureCosmosDBNoSqlEmbeddingRetriever(document_store=store, top_k=3)
         retriever.run(query_embedding=[0.1], filters={"field": "meta.y"}, top_k=1)
         assert captured == {"query_embedding": [0.1], "filters": {"field": "meta.y"}, "top_k": 1}
+
+    def test_run_can_override_with_empty_filters_and_zero_top_k(self, monkeypatch):
+        # filters={} and top_k=0 must override init-time defaults (not fall back via `or`).
+        store = _store()
+        captured = {}
+
+        def fake_retrieval(query_embedding, filters, top_k):
+            captured["query_embedding"] = query_embedding
+            captured["filters"] = filters
+            captured["top_k"] = top_k
+            return []
+
+        monkeypatch.setattr(store, "_embedding_retrieval", fake_retrieval)
+        retriever = AzureCosmosDBNoSqlEmbeddingRetriever(document_store=store, filters={"field": "meta.x"}, top_k=10)
+        retriever.run(query_embedding=[0.1], filters={}, top_k=0)
+        assert captured == {"query_embedding": [0.1], "filters": {}, "top_k": 0}

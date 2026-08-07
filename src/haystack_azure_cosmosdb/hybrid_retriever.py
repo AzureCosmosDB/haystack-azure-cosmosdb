@@ -105,8 +105,8 @@ class AzureCosmosDBNoSqlHybridRetriever:
         docs = self.document_store._hybrid_retrieval(
             query_embedding=query_embedding,
             query_text=query_text,
-            filters=filters or self.filters,
-            top_k=top_k or self.top_k,
+            filters=filters if filters is not None else self.filters,
+            top_k=top_k if top_k is not None else self.top_k,
             weights=weights if weights is not None else self.weights,
         )
         return {"documents": docs}

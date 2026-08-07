@@ -6,6 +6,8 @@ from unittest.mock import patch
 
 import pytest
 from azure.cosmos import PartitionKey
+from haystack import Document
+from haystack.document_stores.errors import DocumentStoreError
 from haystack.utils import Secret
 
 from haystack_azure_cosmosdb import AzureCosmosDBNoSqlDocumentStore
@@ -79,6 +81,29 @@ class TestEmbeddingRetrievalValidation:
         store = _store()
         with pytest.raises(ValueError, match="must not be empty"):
             store._embedding_retrieval(query_embedding=[])
+
+
+class TestWriteDocumentsValidation:
+    def test_rejects_non_document_items_in_mixed_list(self):
+        store = _store()
+        with pytest.raises(ValueError, match="must contain a list of objects of type Document"):
+            store.write_documents([Document(content="ok"), "bad"])
+
+    def test_empty_list_is_allowed(self):
+        store = _store()
+        assert store.write_documents([]) == 0
+
+
+class TestDeleteDocumentsValidation:
+    def test_delete_requires_id_partition_key(self):
+        store = _store(cosmos_container_properties={"partition_key": PartitionKey(path="/meta_key")})
+        with pytest.raises(DocumentStoreError, match="partitioned by '/id'"):
+            store.delete_documents(["doc-1"])
+
+    def test_delete_empty_list_is_noop(self):
+        # Should return without touching the (uninitialized) container, even for a non-/id key.
+        store = _store(cosmos_container_properties={"partition_key": PartitionKey(path="/meta_key")})
+        assert store.delete_documents([]) is None
 
 
 _COMMON = {

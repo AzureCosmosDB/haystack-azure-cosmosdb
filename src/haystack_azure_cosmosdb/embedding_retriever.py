@@ -91,8 +91,8 @@ class AzureCosmosDBNoSqlEmbeddingRetriever:
         :param top_k: Maximum number of documents to return. Overrides the value set at init time.
         :returns: A dictionary with a `documents` key containing the retrieved documents.
         """
-        filters = filters or self.filters
-        top_k = top_k or self.top_k
+        filters = filters if filters is not None else self.filters
+        top_k = top_k if top_k is not None else self.top_k
 
         docs = self.document_store._embedding_retrieval(
             query_embedding=query_embedding,

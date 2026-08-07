@@ -3,12 +3,18 @@
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
 
+import re
 from datetime import datetime
 from typing import Any
 
 from haystack.errors import FilterError
 
 UNSUPPORTED_TYPES_FOR_COMPARISON = (list,)
+
+# A valid filter field is a dotted identifier such as ``content`` or ``meta.year``.
+# Field names are interpolated into the query text (values are parameterized), so this
+# guards against SQL injection through crafted field names.
+_FIELD_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$")
 
 # Parameters returned alongside a WHERE clause. Each entry follows the Azure
 # Cosmos DB parameterized-query format: ``{"name": "@paramN", "value": <value>}``.
@@ -88,7 +94,17 @@ def _parse_comparison_condition(condition: dict[str, Any], parameters: Parameter
 
 
 def _column(field: str) -> str:
-    """Maps a Haystack field name (e.g. ``meta.year``) to a Cosmos DB column (``c.meta.year``)."""
+    """Maps a Haystack field name (e.g. ``meta.year``) to a Cosmos DB column (``c.meta.year``).
+
+    :raises FilterError: If ``field`` is not a dotted identifier. Field names are interpolated
+        directly into the query text, so this prevents SQL injection through crafted field names.
+    """
+    if not _FIELD_PATTERN.match(field):
+        msg = (
+            f"Invalid filter field name: '{field}'. Field names must be dotted identifiers "
+            f"consisting of letters, digits, and underscores (e.g. 'meta.year')."
+        )
+        raise FilterError(msg)
     return f"c.{field}"
 
 
@@ -147,6 +163,9 @@ def _in(column: str, value: Any, parameters: Parameters) -> str:
     if not isinstance(value, list):
         msg = f"{column}'s value must be a list when using 'in' comparator in Azure Cosmos DB for NoSQL"
         raise FilterError(msg)
+    if not value:
+        msg = f"{column}'s value must be a non-empty list when using 'in' comparator in Azure Cosmos DB for NoSQL"
+        raise FilterError(msg)
     names = ", ".join(_add_parameter(v, parameters) for v in value)
     return f"{column} IN ({names})"
 
@@ -154,6 +173,9 @@ def _in(column: str, value: Any, parameters: Parameters) -> str:
 def _not_in(column: str, value: Any, parameters: Parameters) -> str:
     if not isinstance(value, list):
         msg = f"{column}'s value must be a list when using 'not in' comparator in Azure Cosmos DB for NoSQL"
+        raise FilterError(msg)
+    if not value:
+        msg = f"{column}'s value must be a non-empty list when using 'not in' comparator in Azure Cosmos DB for NoSQL"
         raise FilterError(msg)
     names = ", ".join(_add_parameter(v, parameters) for v in value)
     return f"{column} NOT IN ({names})"

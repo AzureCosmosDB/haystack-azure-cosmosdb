@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 from __future__ import annotations
 
+import copy
 import logging
 from typing import Any, cast
 
@@ -154,7 +155,8 @@ class AzureCosmosDBNoSqlDocumentStore:
 
         if full_text_search_enabled:
             if self.full_text_policy is None:
-                self.full_text_policy = DEFAULT_FULL_TEXT_POLICY
+                # Copy the module-level default so per-instance mutations don't leak across instances.
+                self.full_text_policy = copy.deepcopy(DEFAULT_FULL_TEXT_POLICY)
             if not self.indexing_policy.get("fullTextIndexes"):
                 self.indexing_policy = {
                     **self.indexing_policy,
@@ -369,7 +371,7 @@ class AzureCosmosDBNoSqlDocumentStore:
             `DuplicatePolicy.FAIL`.
         :returns: The number of documents written.
         """
-        if documents and not isinstance(documents[0], Document):
+        if not all(isinstance(doc, Document) for doc in documents):
             msg = "param 'documents' must contain a list of objects of type Document"
             raise ValueError(msg)
 
@@ -402,13 +404,22 @@ class AzureCosmosDBNoSqlDocumentStore:
         """
         Deletes documents with the matching `document_ids` from the document store.
 
-        The partition key value is assumed to be the document id (the recommended
-        `partition_key=PartitionKey(path="/id")` configuration).
+        This requires the container to be partitioned by `/id` (the recommended and default
+        configuration), because the document id is used as the partition key value.
 
         :param document_ids: The document ids to delete.
+        :raises DocumentStoreError: If the container is not partitioned by `/id`.
         """
         if not document_ids:
             return
+        if self._partition_key_path != "/id":
+            msg = (
+                f"delete_documents requires the container to be partitioned by '/id', but the "
+                f"configured partition key is '{self._partition_key_path}'. Recreate the store with "
+                f"cosmos_container_properties={{'partition_key': PartitionKey(path='/id')}}, or delete "
+                f"items directly through the Cosmos DB SDK using the correct partition key values."
+            )
+            raise DocumentStoreError(msg)
         for document_id in document_ids:
             self.container.delete_item(item=document_id, partition_key=document_id)
 

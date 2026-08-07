@@ -47,6 +47,13 @@ class TestFullTextPolicySetup:
         }
         assert store.indexing_policy["fullTextIndexes"] == [{"path": "/content"}]
 
+    def test_default_policy_is_isolated_per_instance(self):
+        store_a = _store()
+        store_b = _store()
+        # Mutating one store's policy must not affect another's (no shared module-level dict).
+        store_a.full_text_policy["fullTextPaths"][0]["language"] = "fr-FR"
+        assert store_b.full_text_policy["fullTextPaths"][0]["language"] == "en-US"
+
     def test_disabled_by_default(self):
         store = _store(full_text_search_enabled=False)
         assert store.full_text_search_enabled is False

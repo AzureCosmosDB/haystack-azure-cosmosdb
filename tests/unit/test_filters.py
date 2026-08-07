@@ -51,6 +51,23 @@ class TestNormalizeFilters:
         with pytest.raises(FilterError):
             _normalize_filters({"field": "meta.name", "operator": "in", "value": "a"})
 
+    def test_in_rejects_empty_list(self):
+        with pytest.raises(FilterError, match="non-empty list"):
+            _normalize_filters({"field": "meta.name", "operator": "in", "value": []})
+
+    def test_not_in_rejects_empty_list(self):
+        with pytest.raises(FilterError, match="non-empty list"):
+            _normalize_filters({"field": "meta.name", "operator": "not in", "value": []})
+
+    def test_rejects_injection_in_field_name(self):
+        for bad_field in ["id) OR 1=1 --", "meta.year; DROP", "meta year", "", "meta.", ".meta"]:
+            with pytest.raises(FilterError, match="Invalid filter field name"):
+                _normalize_filters({"field": bad_field, "operator": "==", "value": 1})
+
+    def test_accepts_valid_dotted_field(self):
+        clause, _ = _normalize_filters({"field": "meta.some_field", "operator": "==", "value": 1})
+        assert clause == "c.meta.some_field = @param0"
+
     def test_comparison_rejects_list_value(self):
         with pytest.raises(FilterError):
             _normalize_filters({"field": "meta.number", "operator": ">", "value": [1, 2]})

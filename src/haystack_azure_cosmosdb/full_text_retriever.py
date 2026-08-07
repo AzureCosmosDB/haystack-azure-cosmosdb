@@ -95,7 +95,7 @@ class AzureCosmosDBNoSqlFullTextRetriever:
         """
         docs = self.document_store._full_text_retrieval(
             query_text=query_text,
-            filters=filters or self.filters,
-            top_k=top_k or self.top_k,
+            filters=filters if filters is not None else self.filters,
+            top_k=top_k if top_k is not None else self.top_k,
         )
         return {"documents": docs}
