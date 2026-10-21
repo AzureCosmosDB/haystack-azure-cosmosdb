@@ -35,3 +35,5 @@ updates:
           - "*"
         update-types:
           - "major"
+    cooldown:
+      default-days: 7
